@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg width='194.5912910618793' height='194.5912910618793'><line x1='154.5912910618793' y1='97.29564553093965' x2='68.64782276546984' y2='146.91513008696174' stroke='black' stroke-width='2'/>
+<line x1='154.5912910618793' y1='97.29564553093965' x2='68.6478227654698' y2='47.67616097491758' stroke='black' stroke-width='2'/>
+<line x1='68.64782276546984' y1='146.91513008696174' x2='154.5912910618793' y2='97.29564553093965' stroke='black' stroke-width='2'/>
+<line x1='68.64782276546984' y1='146.91513008696174' x2='68.6478227654698' y2='47.67616097491758' stroke='black' stroke-width='2'/>
+<line x1='68.6478227654698' y1='47.67616097491758' x2='154.5912910618793' y2='97.29564553093965' stroke='black' stroke-width='2'/>
+<line x1='68.6478227654698' y1='47.67616097491758' x2='68.64782276546984' y2='146.91513008696174' stroke='black' stroke-width='2'/>
+<circle cx='154.5912910618793' cy='97.29564553093965' r='20.0' fill='white' stroke='black' stroke-width='1'/>
+<text x='154.5912910618793' y='102.29564553093965' font-size='20' text-anchor='middle' fill='black'>1</text>
+<circle cx='68.64782276546984' cy='146.91513008696174' r='20.0' fill='white' stroke='black' stroke-width='1'/>
+<text x='68.64782276546984' y='151.91513008696174' font-size='20' text-anchor='middle' fill='black'>4</text>
+<circle cx='68.6478227654698' cy='47.67616097491758' r='20.0' fill='white' stroke='black' stroke-width='1'/>
+<text x='68.6478227654698' y='52.67616097491758' font-size='20' text-anchor='middle' fill='black'>5</text>
+</svg>
+
+
+
+

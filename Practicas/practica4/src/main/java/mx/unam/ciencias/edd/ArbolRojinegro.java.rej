@@ -1,0 +1,251 @@
+--- src/main/java/mx/unam/ciencias/edd/ArbolRojinegro.java
++++ src/main/java/mx/unam/ciencias/edd/ArbolRojinegro.java
+@@ -15,8 +15,7 @@ package mx.unam.ciencias.edd;
+  *
+  * Los árboles rojinegros se autobalancean.
+  */
+-public class ArbolRojinegro<T extends Comparable<T>>
+-    extends ArbolBinarioOrdenado<T> {
++public class ArbolRojinegro<T extends Comparable<T>> extends ArbolBinarioOrdenado<T> {
+ 
+     /**
+      * Clase interna protegida para vértices.
+@@ -31,7 +30,13 @@ public class ArbolRojinegro<T extends Comparable<T>>
+          * @param elemento el elemento del vértice.
+          */
+         public VerticeRojinegro(T elemento) {
+-            // Aquí va su código.
++            super(elemento);
++            color = Color.NINGUNO;
++        }
++
++        private VerticeRojinegro verticeRojinegro(VerticeArbolBinario<T> vertice) {
++            VerticeRojinegro v = (VerticeRojinegro)vertice;
++            return v;
+         }
+ 
+         /**
+@@ -39,7 +44,11 @@ public class ArbolRojinegro<T extends Comparable<T>>
+          * @return una representación en cadena del vértice rojinegro.
+          */
+         public String toString() {
+-            // Aquí va su código.
++            String trb = elemento.toString();
++            String colorString;
++            colorString = (color == Color.ROJO) ? "R" : "N";
++            colorString = String.format("" , colorString,trb);
++            return colorString;
+         }
+ 
+         /**
+@@ -57,8 +66,29 @@ public class ArbolRojinegro<T extends Comparable<T>>
+                 return false;
+             @SuppressWarnings("unchecked")
+                 VerticeRojinegro vertice = (VerticeRojinegro)objeto;
+-            // Aquí va su código.
++            return equals(this,vertice);
+         }
++    
++        private boolean equals(VerticeRojinegro h1, VerticeRojinegro h2){
++            if(h1 == null && h2 !=null)
++                return false;
++            if(h1 != null && h2 == null)
++                return false;
++            if(h1 == null && h2 == null)
++                return true;
++            if(!h2.elemento.equals(h1.elemento) || h2.color != h1.color)
++                return false;
++            VerticeRojinegro h1right = verticeRojinegro(h1.derecho);
++            VerticeRojinegro h1left = verticeRojinegro(h1.izquierdo);
++            VerticeRojinegro h2right = verticeRojinegro(h2.derecho);
++            VerticeRojinegro h2left = verticeRojinegro(h2.izquierdo);
++            boolean right = equals(h1right, h2right);
++            boolean left = equals(h1left, h2left);
++            if(right == left)
++                return left;  //o right?
++            return false;
++        }
++
+     }
+ 
+     /**
+@@ -94,8 +124,14 @@ public class ArbolRojinegro<T extends Comparable<T>>
+      * @throws ClassCastException si el vértice no es instancia de {@link
+      *         VerticeRojinegro}.
+      */
++    private VerticeRojinegro verticeRojinegro(VerticeArbolBinario<T> vertice) {
++        VerticeRojinegro v = verticeRojinegro(vertice);
++        return v;
++    }
++
+     public Color getColor(VerticeArbolBinario<T> vertice) {
+-        // Aquí va su código.
++        VerticeRojinegro v = verticeRojinegro(vertice);
++        return v.color;
+     }
+ 
+     /**
+@@ -105,7 +141,90 @@ public class ArbolRojinegro<T extends Comparable<T>>
+      * @param elemento el elemento a agregar.
+      */
+     @Override public void agrega(T elemento) {
+-        // Aquí va su código.
++        super.agrega(elemento);
++        VerticeRojinegro x = verticeRojinegro(ultimoAgregado);
++        x.color = Color.ROJO;
++        rebalancear(x);
++
++
++    } 
++    VerticeRojinegro abuelo, padre, tio;
++    //Método auxiliar seran varios casos basandonos en el libro de Canek
++    private void rebalancear(VerticeRojinegro v) {
++    /*CASO 1 */
++    VerticeRojinegro abuelo, padre, tio;
++    if(!v.hayPadre()) {
++        raiz = v;
++        v.color = Color.NEGRO;
++        return;
++    }  
++    padre = verticeRojinegro(v.padre);
++    
++    //CASO 2
++    
++    if(getColor(padre) == Color.NEGRO)
++        return;
++    abuelo = verticeRojinegro(padre.padre);
++    
++    //CASO 3
++    tio = getTio(verticeRojinegro(padre.padre));
++    if (tio != null && tio.color == Color.ROJO){
++        padre.color = tio.color = Color.NEGRO;
++        abuelo.color = Color.ROJO;
++        rebalancear(abuelo);
++        return;
++    }
++    
++    //CASO 4
++    if (hayHijoIzq(v) &  hayHijoIzq(padre)){
++        if(hayHijoIzq(padre))
++            super.giraIzquierda(padre);
++        else
++            super.giraDerecha(padre);
++        VerticeRojinegro x = v;
++        v = padre;
++        padre = x;
++    }
++    //CASO 5
++    padre.color = Color.NEGRO;
++    abuelo.color = Color.ROJO;
++    if(hayHijoIzq(v))
++        super.giraDerecha(abuelo);
++    else
++        super.giraIzquierda(abuelo);
++    }
++
++    //Método auxiliar que nos diga si hay hijo izquierdo o derecho en el árbol
++    private boolean hayHijoIzq(Vertice vertice){
++        if(!vertice.hayPadre())
++            return false;
++        return vertice.padre.izquierdo == vertice;        
++    }
++
++    private boolean hayHijoDer(Vertice vertice){
++        if(!vertice.hayPadre())
++            return false;
++        return vertice.padre.derecho == vertice;        
++    }
++        
++    //Métodos auxiliares para obtener al padre, al tio y el hijo
++    private VerticeRojinegro getPadre(VerticeRojinegro v) {
++        return v.padre == null ? null : verticeRojinegro(v.padre);
++    }
++
++    private VerticeRojinegro getTio(VerticeRojinegro t) {
++        return hayHijoIzq(padre) ? verticeRojinegro(abuelo.derecho) : verticeRojinegro(abuelo.izquierdo);
++    }
++    private VerticeRojinegro getHijo(Vertice padre, Vertice v) {
++        VerticeRojinegro hijo;
++        if (v == null) {
++            hijo = new VerticeRojinegro(null);
++            hijo.color = Color.NEGRO;
++            hijo.padre = padre;
++            padre.izquierdo = hijo;
++            return verticeRojinegro(hijo);
++        } 
++        return verticeRojinegro(v);
+     }
+ 
+     /**
+@@ -115,9 +234,70 @@ public class ArbolRojinegro<T extends Comparable<T>>
+      * @param elemento el elemento a eliminar del árbol.
+      */
+     @Override public void elimina(T elemento) {
+-        // Aquí va su código.
++        VerticeRojinegro vertice = verticeRojinegro(super.busca(elemento));
++        if (vertice == null)
++            return;
++        VerticeRojinegro anterior = verticeRojinegro(vertmax(vertice.izquierdo));
++        
++        //En el caso de que no haya un anterior
++        if(anterior == null)
++            anterior = vertice;
++        //Se tiene que intercambiar
++        intercambiar(vertice,anterior);
++        VerticeRojinegro hijo = getHijo(anterior,anterior.izquierdo);
++        //Tenemos que moverlo ahora arriba 
++        moverUp(anterior,hijo);
++        if(anterior.color == Color.NEGRO && hijo.color == Color.ROJO)
++            hijo.color = Color.NEGRO;
++        if (anterior.color == Color.ROJO)
++        //Aqui debemos quitar el vertice
++            quitarVertice(hijo);
++        if (anterior.color == Color.NEGRO && hijo.color == Color.NEGRO)
++            rebalancear2(hijo);
++
++    }
++    
++
++    private boolean hayDerecho(Vertice v){
++        return v.derecho != null;
++    }
++
++
++    private void intercambiar(VerticeRojinegro vertice1, VerticeRojinegro vertice2) {
++        T p = vertice1.elemento;
++        vertice1.elemento = vertice2.elemento;
++        vertice2.elemento = p;
++
++    }
++    private void moverUp(Vertice padre, Vertice hijo) {
++            padre.padre.derecho = hijo;
++            hijo.padre = padre.padre;
++            hijo.izquierdo = padre;
++            padre.padre = hijo;
++            if (padre == raiz)
++                raiz = hijo;
++    }
++    private void quitarVertice(Vertice vertice) {
++        if (hayDerecho(vertice)) {
++            vertice.padre.derecho = null;
++            vertice.padre = null;
++            elementos--;
++        } else {
++            vertice.padre.izquierdo = null;
++            vertice.padre = null;
++            elementos--;
++        }
++    }
++    private void rebalancear2(VerticeRojinegro v){
++        return;
+     }
+ 
++    private Vertice vertmax(Vertice vertice) {
++        while (vertice.hayDerecho())
++            vertice = vertice.derecho;
++        return vertice;
++    }
++    
+     /**
+      * Lanza la excepción {@link UnsupportedOperationException}: los árboles
+      * rojinegros no pueden ser girados a la izquierda por los usuarios de la
